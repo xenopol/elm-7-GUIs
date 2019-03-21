@@ -4820,6 +4820,8 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 };
 var elm$html$Html$button = _VirtualDom_node('button');
 var elm$html$Html$div = _VirtualDom_node('div');
+var elm$html$Html$fieldset = _VirtualDom_node('fieldset');
+var elm$html$Html$legend = _VirtualDom_node('legend');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
 var elm$json$Json$Encode$string = _Json_wrap;
@@ -4850,13 +4852,20 @@ var elm$html$Html$Events$onClick = function (msg) {
 };
 var author$project$Main$view = function (model) {
 	return A2(
-		elm$html$Html$div,
+		elm$html$Html$fieldset,
 		_List_fromArray(
 			[
 				elm$html$Html$Attributes$class('container')
 			]),
 		_List_fromArray(
 			[
+				A2(
+				elm$html$Html$legend,
+				_List_Nil,
+				_List_fromArray(
+					[
+						elm$html$Html$text('Counter')
+					])),
 				A2(
 				elm$html$Html$div,
 				_List_fromArray(
