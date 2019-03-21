@@ -80,7 +80,7 @@ convertFToC temp =
 getTempWithDefault : String -> Maybe Float -> String
 getTempWithDefault default temp =
     temp
-        |> Maybe.map (\t -> String.fromFloat t)
+        |> Maybe.map String.fromFloat
         |> Maybe.withDefault default
 
 

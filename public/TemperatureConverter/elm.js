@@ -4449,12 +4449,7 @@ var author$project$Main$getTempWithDefault = F2(
 		return A2(
 			elm$core$Maybe$withDefault,
 			_default,
-			A2(
-				elm$core$Maybe$map,
-				function (t) {
-					return elm$core$String$fromFloat(t);
-				},
-				temp));
+			A2(elm$core$Maybe$map, elm$core$String$fromFloat, temp));
 	});
 var author$project$Main$update = F2(
 	function (msg, model) {
