@@ -1,0 +1,85 @@
+html {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: #F44336;
+  box-sizing: border-box;
+
+  --main-width: 300px;
+  --font-size: 30px;
+  --disabled-color: #999;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  color: white;
+  font-size: var(--font-size);
+  border: 2px solid white;
+  border-radius: 30px;
+}
+
+.container select {
+  width: var(--main-width);
+  margin-bottom: 20px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.container input {
+  width: var(--main-width);
+  margin-bottom: 20px;
+  padding: 10px;
+  font-size: var(--font-size);
+  color: white;
+  cursor: pointer;
+  box-sizing: border-box;
+  border: 2px solid white;
+  background: transparent;
+  border-radius: 30px;
+}
+
+.container input:disabled {
+  color: var(--disabled-color);
+  border-color: var(--disabled-color);
+  cursor: not-allowed;
+}
+
+.container button {
+  width: var(--main-width);
+  padding: 10px 0;
+  font-size: var(--font-size);
+  color: white;
+  cursor: pointer;
+  border: 2px solid white;
+  background: transparent;
+  border-radius: 30px;
+}
+
+.container button:disabled {
+  cursor: not-allowed;
+  color: var(--disabled-color);
+  border-color: var(--disabled-color);
+}
+
+.container button:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.container button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.book-text {
+  font-size: var(--font-size);
+  color: white;
+}

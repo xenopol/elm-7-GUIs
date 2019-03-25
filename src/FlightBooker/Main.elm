@@ -182,7 +182,7 @@ view model =
                 else
                     "return"
         in
-        div [] [ text <| "You booked a " ++ flightType ++ " flight on " ++ model.departureDay ]
+        div [ class "book-text" ] [ text <| "You booked a " ++ flightType ++ " flight on " ++ model.departureDay ]
 
     else
         fieldset [ class "container" ]
@@ -201,7 +201,12 @@ view model =
             , input
                 [ type_ "date"
                 , value model.returnDay
-                , min model.departureDay
+                , min <|
+                    if String.isEmpty model.departureDay then
+                        model.date
+
+                    else
+                        model.departureDay
                 , disabled <| model.flightType == OneWay
                 , onInput SetReturnDay
                 ]
@@ -219,8 +224,7 @@ isFormInvalid { flightType, departureDay, returnDay } =
     if
         String.isEmpty departureDay
             || (flightType == Return && String.isEmpty returnDay)
-            || returnDay
-            < departureDay
+            || (flightType == Return && returnDay < departureDay)
     then
         True
 
