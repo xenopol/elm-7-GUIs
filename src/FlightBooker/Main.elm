@@ -2,8 +2,10 @@ module Main exposing (FlightType(..), Model, Msg(..), init, main, subscriptions,
 
 import Browser
 import Html exposing (Html, button, div, fieldset, input, legend, option, select, text)
-import Html.Attributes exposing (class, disabled, type_, value)
+import Html.Attributes exposing (class, disabled, min, type_, value)
 import Html.Events exposing (onClick, onInput)
+import Task
+import Time
 
 
 
@@ -25,7 +27,9 @@ main =
 
 
 type alias Model =
-    { flightType : FlightType
+    { timezone : Time.Zone
+    , date : String
+    , flightType : FlightType
     , departureDay : String
     , returnDay : String
     , isDepartureDayValid : Bool
@@ -41,7 +45,17 @@ type FlightType
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model OneWay "" "" True True False, Cmd.none )
+    ( Model
+        Time.utc
+        ""
+        OneWay
+        ""
+        ""
+        True
+        True
+        False
+    , Task.perform GetTimezone Time.here
+    )
 
 
 
@@ -49,7 +63,9 @@ init _ =
 
 
 type Msg
-    = SelectFlightType String
+    = GetTimezone Time.Zone
+    | GetTime Time.Posix
+    | SelectFlightType String
     | SetDepartureDay String
     | SetReturnDay String
     | BookFlight
@@ -58,6 +74,28 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        GetTimezone timezone ->
+            ( { model | timezone = timezone }, Task.perform GetTime Time.now )
+
+        GetTime time ->
+            let
+                year =
+                    Time.toYear model.timezone time
+
+                month =
+                    Time.toMonth model.timezone time
+                        |> getMonthNumber
+
+                day =
+                    Time.toDay model.timezone time
+                        |> String.fromInt
+                        |> String.padLeft 2 '0'
+
+                date =
+                    String.fromInt year ++ "-" ++ month ++ "-" ++ day
+            in
+            ( { model | date = date, departureDay = date, returnDay = date }, Cmd.none )
+
         SelectFlightType flightType ->
             ( { model
                 | flightType =
@@ -78,6 +116,46 @@ update msg model =
 
         BookFlight ->
             ( { model | isFlightBooked = True }, Cmd.none )
+
+
+getMonthNumber : Time.Month -> String
+getMonthNumber month =
+    case month of
+        Time.Jan ->
+            "01"
+
+        Time.Feb ->
+            "02"
+
+        Time.Mar ->
+            "03"
+
+        Time.Apr ->
+            "04"
+
+        Time.May ->
+            "05"
+
+        Time.Jun ->
+            "06"
+
+        Time.Jul ->
+            "07"
+
+        Time.Aug ->
+            "08"
+
+        Time.Sep ->
+            "09"
+
+        Time.Oct ->
+            "10"
+
+        Time.Nov ->
+            "11"
+
+        Time.Dec ->
+            "12"
 
 
 
@@ -113,15 +191,38 @@ view model =
                 [ option [ value "one-way" ] [ text "one-way flight" ]
                 , option [ value "return" ] [ text "return flight" ]
                 ]
-            , input [ type_ "date", onInput SetDepartureDay ] []
             , input
                 [ type_ "date"
-                , onInput SetReturnDay
+                , value model.departureDay
+                , min model.date
+                , onInput SetDepartureDay
+                ]
+                []
+            , input
+                [ type_ "date"
+                , value model.returnDay
+                , min model.departureDay
                 , disabled <| model.flightType == OneWay
+                , onInput SetReturnDay
                 ]
                 []
             , button
-                [ onClick BookFlight -- TO-DO add validation
+                [ onClick BookFlight
+                , disabled <| isFormInvalid model
                 ]
                 [ text "Book" ]
             ]
+
+
+isFormInvalid : Model -> Bool
+isFormInvalid { flightType, departureDay, returnDay } =
+    if
+        String.isEmpty departureDay
+            || (flightType == Return && String.isEmpty returnDay)
+            || returnDay
+            < departureDay
+    then
+        True
+
+    else
+        False
