@@ -26,15 +26,15 @@ main =
 -- Model
 
 
-type alias Model =
-    { timezone : Time.Zone
-    , date : String
-    , flightType : FlightType
+type Model
+    = Booking Flight String
+    | Booked Flight
+
+
+type alias Flight =
+    { flightType : FlightType
     , departureDay : String
     , returnDay : String
-    , isDepartureDayValid : Bool
-    , isReturnDayValid : Bool
-    , isFlightBooked : Bool
     }
 
 
@@ -45,15 +45,9 @@ type FlightType
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model
-        Time.utc
+    ( Booking
+        (Flight OneWay "" "")
         ""
-        OneWay
-        ""
-        ""
-        True
-        True
-        False
     , Task.perform GetTimezone Time.here
     )
 
@@ -64,7 +58,7 @@ init _ =
 
 type Msg
     = GetTimezone Time.Zone
-    | GetTime Time.Posix
+    | GetTime Time.Zone Time.Posix
     | SelectFlightType String
     | SetDepartureDay String
     | SetReturnDay String
@@ -73,49 +67,60 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        GetTimezone timezone ->
-            ( { model | timezone = timezone }, Task.perform GetTime Time.now )
+    case ( model, msg ) of
+        ( _, GetTimezone timezone ) ->
+            ( model
+            , Task.perform (GetTime timezone) Time.now
+            )
 
-        GetTime time ->
+        ( Booking flight _, GetTime timezone time ) ->
             let
                 year =
-                    Time.toYear model.timezone time
+                    Time.toYear timezone time
 
                 month =
-                    Time.toMonth model.timezone time
+                    Time.toMonth timezone time
                         |> getMonthNumber
 
                 day =
-                    Time.toDay model.timezone time
+                    Time.toDay timezone time
                         |> String.fromInt
                         |> String.padLeft 2 '0'
 
-                date =
+                today =
                     String.fromInt year ++ "-" ++ month ++ "-" ++ day
             in
-            ( { model | date = date, departureDay = date, returnDay = date }, Cmd.none )
-
-        SelectFlightType flightType ->
-            ( { model
-                | flightType =
-                    if flightType == "one-way" then
-                        OneWay
-
-                    else
-                        Return
-              }
+            ( Booking
+                { flight | departureDay = today, returnDay = today }
+                today
             , Cmd.none
             )
 
-        SetDepartureDay day ->
-            ( { model | departureDay = day }, Cmd.none )
+        ( Booking flight today, SelectFlightType flightType ) ->
+            ( Booking
+                { flight
+                    | flightType =
+                        if flightType == "one-way" then
+                            OneWay
 
-        SetReturnDay day ->
-            ( { model | returnDay = day }, Cmd.none )
+                        else
+                            Return
+                }
+                today
+            , Cmd.none
+            )
 
-        BookFlight ->
-            ( { model | isFlightBooked = True }, Cmd.none )
+        ( Booking flight today, SetDepartureDay day ) ->
+            ( Booking { flight | departureDay = day } today, Cmd.none )
+
+        ( Booking flight today, SetReturnDay day ) ->
+            ( Booking { flight | returnDay = day } today, Cmd.none )
+
+        ( Booking flight _, BookFlight ) ->
+            ( Booked flight, Cmd.none )
+
+        ( Booked _, _ ) ->
+            ( model, Cmd.none )
 
 
 getMonthNumber : Time.Month -> String
@@ -173,53 +178,65 @@ subscriptions _ =
 
 view : Model -> Html Msg
 view model =
-    if model.isFlightBooked then
-        let
-            flightType =
-                if model.flightType == OneWay then
-                    "one-way"
+    case model of
+        Booking flight today ->
+            fieldset [ class "container" ]
+                [ legend [] [ text "Flight Booker" ]
+                , select [ onInput SelectFlightType ]
+                    [ option [ value "one-way" ] [ text "one-way flight" ]
+                    , option [ value "return" ] [ text "return flight" ]
+                    ]
+                , input
+                    [ type_ "date"
+                    , value flight.departureDay
+                    , min today
+                    , onInput SetDepartureDay
+                    ]
+                    []
+                , input
+                    [ type_ "date"
+                    , value flight.returnDay
+                    , min <|
+                        if String.isEmpty flight.departureDay then
+                            today
 
-                else
-                    "return"
-        in
-        div [ class "book-text" ] [ text <| "You booked a " ++ flightType ++ " flight on " ++ model.departureDay ]
+                        else
+                            flight.departureDay
+                    , disabled <| flight.flightType == OneWay
+                    , onInput SetReturnDay
+                    ]
+                    []
+                , button
+                    [ onClick BookFlight
+                    , disabled <| isFormInvalid flight
+                    ]
+                    [ text "Book" ]
+                ]
 
-    else
-        fieldset [ class "container" ]
-            [ legend [] [ text "Flight Booker" ]
-            , select [ onInput SelectFlightType ]
-                [ option [ value "one-way" ] [ text "one-way flight" ]
-                , option [ value "return" ] [ text "return flight" ]
-                ]
-            , input
-                [ type_ "date"
-                , value model.departureDay
-                , min model.date
-                , onInput SetDepartureDay
-                ]
-                []
-            , input
-                [ type_ "date"
-                , value model.returnDay
-                , min <|
-                    if String.isEmpty model.departureDay then
-                        model.date
+        Booked flight ->
+            let
+                flightType =
+                    if flight.flightType == OneWay then
+                        "one-way"
 
                     else
-                        model.departureDay
-                , disabled <| model.flightType == OneWay
-                , onInput SetReturnDay
-                ]
-                []
-            , button
-                [ onClick BookFlight
-                , disabled <| isFormInvalid model
-                ]
-                [ text "Book" ]
-            ]
+                        "return"
+
+                fragment =
+                    "You booked a " ++ flightType ++ " flight on " ++ flight.departureDay
+
+                message =
+                    if flight.flightType == OneWay then
+                        fragment
+
+                    else
+                        fragment ++ " to " ++ flight.returnDay
+            in
+            div [ class "book-text" ]
+                [ text message ]
 
 
-isFormInvalid : Model -> Bool
+isFormInvalid : Flight -> Bool
 isFormInvalid { flightType, departureDay, returnDay } =
     if
         String.isEmpty departureDay

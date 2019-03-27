@@ -600,11 +600,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.Q.B === region.V.B)
+	if (region.N.C === region.S.C)
 	{
-		return 'on line ' + region.Q.B;
+		return 'on line ' + region.N.C;
 	}
-	return 'on lines ' + region.Q.B + ' through ' + region.V.B;
+	return 'on lines ' + region.N.C + ' through ' + region.S.C;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.ax,
-		impl.aH,
-		impl.aF,
+		impl.au,
+		impl.aC,
+		impl.aA,
 		function() { return function() {} }
 	);
 });
@@ -2743,8 +2743,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		l: func(record.l),
-		R: record.R,
-		P: record.P
+		O: record.O,
+		M: record.M
 	}
 });
 
@@ -3013,10 +3013,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.l;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.R;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.O;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.P) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.M) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3966,11 +3966,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.ax,
-		impl.aH,
-		impl.aF,
+		impl.au,
+		impl.aC,
+		impl.aA,
 		function(sendToApp, initialModel) {
-			var view = impl.aJ;
+			var view = impl.aE;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -4002,12 +4002,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.ax,
-		impl.aH,
-		impl.aF,
+		impl.au,
+		impl.aC,
+		impl.aA,
 		function(sendToApp, initialModel) {
 			var divertHrefToApp = impl.D && impl.D(sendToApp)
-			var view = impl.aJ;
+			var view = impl.aE;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -4015,12 +4015,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aq);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.an);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aG) && (_VirtualDom_doc.title = title = doc.aG);
+				(title !== doc.aB) && (_VirtualDom_doc.title = title = doc.aB);
 			});
 		}
 	);
@@ -4076,8 +4076,8 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.aB;
-	var onUrlRequest = impl.aC;
+	var onUrlChange = impl.aw;
+	var onUrlRequest = impl.ax;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
@@ -4097,9 +4097,9 @@ function _Browser_application(impl)
 					var next = elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.ag === next.ag
-							&& curr.Y === next.Y
-							&& curr.ad.a === next.ad.a
+							&& curr.ad === next.ad
+							&& curr.V === next.V
+							&& curr.aa.a === next.aa.a
 						)
 							? elm$browser$Browser$Internal(next)
 							: elm$browser$Browser$External(href)
@@ -4107,13 +4107,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		ax: function(flags)
+		au: function(flags)
 		{
-			return A3(impl.ax, flags, _Browser_getUrl(), key);
+			return A3(impl.au, flags, _Browser_getUrl(), key);
 		},
-		aJ: impl.aJ,
-		aH: impl.aH,
-		aF: impl.aF
+		aE: impl.aE,
+		aC: impl.aC,
+		aA: impl.aA
 	});
 }
 
@@ -4179,17 +4179,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { av: 'hidden', ar: 'visibilitychange' }
+		? { as: 'hidden', ao: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { av: 'mozHidden', ar: 'mozvisibilitychange' }
+		? { as: 'mozHidden', ao: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { av: 'msHidden', ar: 'msvisibilitychange' }
+		? { as: 'msHidden', ao: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { av: 'webkitHidden', ar: 'webkitvisibilitychange' }
-		: { av: 'hidden', ar: 'visibilitychange' };
+		? { as: 'webkitHidden', ao: 'webkitvisibilitychange' }
+		: { as: 'hidden', ao: 'visibilitychange' };
 }
 
 
@@ -4270,12 +4270,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		ak: _Browser_getScene(),
-		an: {
-			K: _Browser_window.pageXOffset,
-			L: _Browser_window.pageYOffset,
-			y: _Browser_doc.documentElement.clientWidth,
-			t: _Browser_doc.documentElement.clientHeight
+		ah: _Browser_getScene(),
+		ak: {
+			I: _Browser_window.pageXOffset,
+			J: _Browser_window.pageYOffset,
+			A: _Browser_doc.documentElement.clientWidth,
+			u: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4285,8 +4285,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		y: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		t: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		A: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		u: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4309,15 +4309,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			ak: {
-				y: node.scrollWidth,
-				t: node.scrollHeight
+			ah: {
+				A: node.scrollWidth,
+				u: node.scrollHeight
 			},
-			an: {
-				K: node.scrollLeft,
-				L: node.scrollTop,
-				y: node.clientWidth,
-				t: node.clientHeight
+			ak: {
+				I: node.scrollLeft,
+				J: node.scrollTop,
+				A: node.clientWidth,
+				u: node.clientHeight
 			}
 		};
 	});
@@ -4347,18 +4347,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			ak: _Browser_getScene(),
-			an: {
-				K: x,
-				L: y,
-				y: _Browser_doc.documentElement.clientWidth,
-				t: _Browser_doc.documentElement.clientHeight
+			ah: _Browser_getScene(),
+			ak: {
+				I: x,
+				J: y,
+				A: _Browser_doc.documentElement.clientWidth,
+				u: _Browser_doc.documentElement.clientHeight
 			},
-			as: {
-				K: x + rect.left,
-				L: y + rect.top,
-				y: rect.width,
-				t: rect.height
+			ap: {
+				I: x + rect.left,
+				J: y + rect.top,
+				A: rect.width,
+				u: rect.height
 			}
 		};
 	});
@@ -4393,16 +4393,18 @@ function _Browser_load(url)
 		}
 	}));
 }
+var author$project$Main$Booking = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var author$project$Main$Flight = F3(
+	function (flightType, departureDay, returnDay) {
+		return {k: departureDay, t: flightType, x: returnDay};
+	});
 var author$project$Main$GetTimezone = function (a) {
 	return {$: 0, a: a};
 };
-var author$project$Main$Model = F8(
-	function (timezone, date, flightType, departureDay, returnDay, isDepartureDayValid, isReturnDayValid, isFlightBooked) {
-		return {J: date, k: departureDay, A: flightType, ay: isDepartureDayValid, M: isFlightBooked, az: isReturnDayValid, C: returnDay, F: timezone};
-	});
 var author$project$Main$OneWay = 0;
-var elm$core$Basics$False = 1;
-var elm$core$Basics$True = 0;
 var elm$core$Basics$identity = function (x) {
 	return x;
 };
@@ -4619,6 +4621,8 @@ var elm$core$Task$sequence = function (tasks) {
 		elm$core$Task$succeed(_List_Nil),
 		tasks);
 };
+var elm$core$Basics$False = 1;
+var elm$core$Basics$True = 0;
 var elm$core$Result$isOk = function (result) {
 	if (!result.$) {
 		return true;
@@ -5035,10 +5039,12 @@ var elm$time$Time$Zone = F2(
 	});
 var elm$time$Time$customZone = elm$time$Time$Zone;
 var elm$time$Time$here = _Time_here(0);
-var elm$time$Time$utc = A2(elm$time$Time$Zone, 0, _List_Nil);
 var author$project$Main$init = function (_n0) {
 	return _Utils_Tuple2(
-		A8(author$project$Main$Model, elm$time$Time$utc, '', 0, '', '', true, true, false),
+		A2(
+			author$project$Main$Booking,
+			A3(author$project$Main$Flight, 0, '', ''),
+			''),
 		A2(elm$core$Task$perform, author$project$Main$GetTimezone, elm$time$Time$here));
 };
 var elm$core$Platform$Sub$batch = _Platform_batch;
@@ -5046,9 +5052,13 @@ var elm$core$Platform$Sub$none = elm$core$Platform$Sub$batch(_List_Nil);
 var author$project$Main$subscriptions = function (_n0) {
 	return elm$core$Platform$Sub$none;
 };
-var author$project$Main$GetTime = function (a) {
+var author$project$Main$Booked = function (a) {
 	return {$: 1, a: a};
 };
+var author$project$Main$GetTime = F2(
+	function (a, b) {
+		return {$: 1, a: a, b: b};
+	});
 var author$project$Main$Return = 1;
 var author$project$Main$getMonthNumber = function (month) {
 	switch (month) {
@@ -5128,8 +5138,8 @@ var elm$time$Time$toAdjustedMinutesHelp = F3(
 			} else {
 				var era = eras.a;
 				var olderEras = eras.b;
-				if (_Utils_cmp(era.Q, posixMinutes) < 0) {
-					return posixMinutes + era.aa;
+				if (_Utils_cmp(era.N, posixMinutes) < 0) {
+					return posixMinutes + era.Y;
 				} else {
 					var $temp$defaultOffset = defaultOffset,
 						$temp$posixMinutes = posixMinutes,
@@ -5169,15 +5179,15 @@ var elm$time$Time$toCivil = function (minutes) {
 	var month = mp + ((mp < 10) ? 3 : (-9));
 	var year = yearOfEra + (era * 400);
 	return {
-		U: (dayOfYear - ((((153 * mp) + 2) / 5) | 0)) + 1,
-		_: month,
-		ao: year + ((month <= 2) ? 1 : 0)
+		R: (dayOfYear - ((((153 * mp) + 2) / 5) | 0)) + 1,
+		X: month,
+		al: year + ((month <= 2) ? 1 : 0)
 	};
 };
 var elm$time$Time$toDay = F2(
 	function (zone, time) {
 		return elm$time$Time$toCivil(
-			A2(elm$time$Time$toAdjustedMinutes, zone, time)).U;
+			A2(elm$time$Time$toAdjustedMinutes, zone, time)).R;
 	});
 var elm$time$Time$Apr = 3;
 var elm$time$Time$Aug = 7;
@@ -5194,7 +5204,7 @@ var elm$time$Time$Sep = 8;
 var elm$time$Time$toMonth = F2(
 	function (zone, time) {
 		var _n0 = elm$time$Time$toCivil(
-			A2(elm$time$Time$toAdjustedMinutes, zone, time))._;
+			A2(elm$time$Time$toAdjustedMinutes, zone, time)).X;
 		switch (_n0) {
 			case 1:
 				return 0;
@@ -5225,65 +5235,105 @@ var elm$time$Time$toMonth = F2(
 var elm$time$Time$toYear = F2(
 	function (zone, time) {
 		return elm$time$Time$toCivil(
-			A2(elm$time$Time$toAdjustedMinutes, zone, time)).ao;
+			A2(elm$time$Time$toAdjustedMinutes, zone, time)).al;
 	});
 var author$project$Main$update = F2(
 	function (msg, model) {
-		switch (msg.$) {
-			case 0:
-				var timezone = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{F: timezone}),
-					A2(elm$core$Task$perform, author$project$Main$GetTime, elm$time$Time$now));
-			case 1:
-				var time = msg.a;
-				var year = A2(elm$time$Time$toYear, model.F, time);
-				var month = author$project$Main$getMonthNumber(
-					A2(elm$time$Time$toMonth, model.F, time));
-				var day = A3(
-					elm$core$String$padLeft,
-					2,
-					'0',
-					elm$core$String$fromInt(
-						A2(elm$time$Time$toDay, model.F, time)));
-				var date = elm$core$String$fromInt(year) + ('-' + (month + ('-' + day)));
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{J: date, k: date, C: date}),
-					elm$core$Platform$Cmd$none);
-			case 2:
-				var flightType = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							A: (flightType === 'one-way') ? 0 : 1
-						}),
-					elm$core$Platform$Cmd$none);
-			case 3:
-				var day = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{k: day}),
-					elm$core$Platform$Cmd$none);
-			case 4:
-				var day = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{C: day}),
-					elm$core$Platform$Cmd$none);
-			default:
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{M: true}),
-					elm$core$Platform$Cmd$none);
+		var _n0 = _Utils_Tuple2(model, msg);
+		_n0$0:
+		while (true) {
+			if (!_n0.a.$) {
+				switch (_n0.b.$) {
+					case 0:
+						break _n0$0;
+					case 1:
+						var _n1 = _n0.a;
+						var flight = _n1.a;
+						var _n2 = _n0.b;
+						var timezone = _n2.a;
+						var time = _n2.b;
+						var year = A2(elm$time$Time$toYear, timezone, time);
+						var month = author$project$Main$getMonthNumber(
+							A2(elm$time$Time$toMonth, timezone, time));
+						var day = A3(
+							elm$core$String$padLeft,
+							2,
+							'0',
+							elm$core$String$fromInt(
+								A2(elm$time$Time$toDay, timezone, time)));
+						var today = elm$core$String$fromInt(year) + ('-' + (month + ('-' + day)));
+						return _Utils_Tuple2(
+							A2(
+								author$project$Main$Booking,
+								_Utils_update(
+									flight,
+									{k: today, x: today}),
+								today),
+							elm$core$Platform$Cmd$none);
+					case 2:
+						var _n3 = _n0.a;
+						var flight = _n3.a;
+						var today = _n3.b;
+						var flightType = _n0.b.a;
+						return _Utils_Tuple2(
+							A2(
+								author$project$Main$Booking,
+								_Utils_update(
+									flight,
+									{
+										t: (flightType === 'one-way') ? 0 : 1
+									}),
+								today),
+							elm$core$Platform$Cmd$none);
+					case 3:
+						var _n4 = _n0.a;
+						var flight = _n4.a;
+						var today = _n4.b;
+						var day = _n0.b.a;
+						return _Utils_Tuple2(
+							A2(
+								author$project$Main$Booking,
+								_Utils_update(
+									flight,
+									{k: day}),
+								today),
+							elm$core$Platform$Cmd$none);
+					case 4:
+						var _n5 = _n0.a;
+						var flight = _n5.a;
+						var today = _n5.b;
+						var day = _n0.b.a;
+						return _Utils_Tuple2(
+							A2(
+								author$project$Main$Booking,
+								_Utils_update(
+									flight,
+									{x: day}),
+								today),
+							elm$core$Platform$Cmd$none);
+					default:
+						var _n6 = _n0.a;
+						var flight = _n6.a;
+						var _n7 = _n0.b;
+						return _Utils_Tuple2(
+							author$project$Main$Booked(flight),
+							elm$core$Platform$Cmd$none);
+				}
+			} else {
+				if (!_n0.b.$) {
+					break _n0$0;
+				} else {
+					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+				}
+			}
 		}
+		var timezone = _n0.b.a;
+		return _Utils_Tuple2(
+			model,
+			A2(
+				elm$core$Task$perform,
+				author$project$Main$GetTime(timezone),
+				elm$time$Time$now));
 	});
 var author$project$Main$BookFlight = {$: 5};
 var author$project$Main$SelectFlightType = function (a) {
@@ -5299,9 +5349,9 @@ var elm$core$String$isEmpty = function (string) {
 	return string === '';
 };
 var author$project$Main$isFormInvalid = function (_n0) {
-	var flightType = _n0.A;
+	var flightType = _n0.t;
 	var departureDay = _n0.k;
-	var returnDay = _n0.C;
+	var returnDay = _n0.x;
 	return (elm$core$String$isEmpty(departureDay) || (((flightType === 1) && elm$core$String$isEmpty(returnDay)) || ((flightType === 1) && (_Utils_cmp(returnDay, departureDay) < 0)))) ? true : false;
 };
 var elm$json$Json$Decode$map = _Json_map1;
@@ -5400,19 +5450,9 @@ var elm$html$Html$Events$onInput = function (tagger) {
 			A2(elm$json$Json$Decode$map, tagger, elm$html$Html$Events$targetValue)));
 };
 var author$project$Main$view = function (model) {
-	if (model.M) {
-		var flightType = (!model.A) ? 'one-way' : 'return';
-		return A2(
-			elm$html$Html$div,
-			_List_fromArray(
-				[
-					elm$html$Html$Attributes$class('book-text')
-				]),
-			_List_fromArray(
-				[
-					elm$html$Html$text('You booked a ' + (flightType + (' flight on ' + model.k)))
-				]));
-	} else {
+	if (!model.$) {
+		var flight = model.a;
+		var today = model.b;
 		return A2(
 			elm$html$Html$fieldset,
 			_List_fromArray(
@@ -5462,8 +5502,8 @@ var author$project$Main$view = function (model) {
 					_List_fromArray(
 						[
 							elm$html$Html$Attributes$type_('date'),
-							elm$html$Html$Attributes$value(model.k),
-							elm$html$Html$Attributes$min(model.J),
+							elm$html$Html$Attributes$value(flight.k),
+							elm$html$Html$Attributes$min(today),
 							elm$html$Html$Events$onInput(author$project$Main$SetDepartureDay)
 						]),
 					_List_Nil),
@@ -5472,10 +5512,10 @@ var author$project$Main$view = function (model) {
 					_List_fromArray(
 						[
 							elm$html$Html$Attributes$type_('date'),
-							elm$html$Html$Attributes$value(model.C),
+							elm$html$Html$Attributes$value(flight.x),
 							elm$html$Html$Attributes$min(
-							elm$core$String$isEmpty(model.k) ? model.J : model.k),
-							elm$html$Html$Attributes$disabled(!model.A),
+							elm$core$String$isEmpty(flight.k) ? today : flight.k),
+							elm$html$Html$Attributes$disabled(!flight.t),
 							elm$html$Html$Events$onInput(author$project$Main$SetReturnDay)
 						]),
 					_List_Nil),
@@ -5485,12 +5525,27 @@ var author$project$Main$view = function (model) {
 						[
 							elm$html$Html$Events$onClick(author$project$Main$BookFlight),
 							elm$html$Html$Attributes$disabled(
-							author$project$Main$isFormInvalid(model))
+							author$project$Main$isFormInvalid(flight))
 						]),
 					_List_fromArray(
 						[
 							elm$html$Html$text('Book')
 						]))
+				]));
+	} else {
+		var flight = model.a;
+		var flightType = (!flight.t) ? 'one-way' : 'return';
+		var fragment = 'You booked a ' + (flightType + (' flight on ' + flight.k));
+		var message = (!flight.t) ? fragment : (fragment + (' to ' + flight.x));
+		return A2(
+			elm$html$Html$div,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('book-text')
+				]),
+			_List_fromArray(
+				[
+					elm$html$Html$text(message)
 				]));
 	}
 };
@@ -5531,7 +5586,7 @@ var elm$core$String$contains = _String_contains;
 var elm$core$String$toInt = _String_toInt;
 var elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {X: fragment, Y: host, ab: path, ad: port_, ag: protocol, ah: query};
+		return {U: fragment, V: host, Z: path, aa: port_, ad: protocol, ae: query};
 	});
 var elm$url$Url$chompBeforePath = F5(
 	function (protocol, path, params, frag, str) {
@@ -5637,6 +5692,6 @@ var elm$url$Url$fromString = function (str) {
 };
 var elm$browser$Browser$element = _Browser_element;
 var author$project$Main$main = elm$browser$Browser$element(
-	{ax: author$project$Main$init, aF: author$project$Main$subscriptions, aH: author$project$Main$update, aJ: author$project$Main$view});
+	{au: author$project$Main$init, aA: author$project$Main$subscriptions, aC: author$project$Main$update, aE: author$project$Main$view});
 _Platform_export({'Main':{'init':author$project$Main$main(
 	elm$json$Json$Decode$succeed(0))(0)}});}(this));
