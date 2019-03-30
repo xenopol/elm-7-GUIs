@@ -5410,6 +5410,15 @@ var author$project$Main$SetTimerRange = function (a) {
 	return {$: 1, a: a};
 };
 var elm$core$String$fromFloat = _String_fromNumber;
+var elm$core$String$length = _String_length;
+var author$project$Main$getTimer = function (number) {
+	var timer = elm$core$String$fromFloat(number);
+	var timerLength = elm$core$String$length(timer);
+	var roundedTimerLength = elm$core$String$length(
+		elm$core$String$fromInt(
+			elm$core$Basics$round(number)));
+	return _Utils_eq(timerLength, roundedTimerLength) ? (timer + '.0 s') : (timer + ' s');
+};
 var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$map2 = _Json_map2;
 var elm$json$Json$Decode$succeed = _Json_succeed;
@@ -5543,7 +5552,7 @@ var author$project$Main$view = function (_n0) {
 				_List_fromArray(
 					[
 						elm$html$Html$text(
-						elm$core$String$fromFloat(timer))
+						'⏱ ' + author$project$Main$getTimer(timer))
 					])),
 				A2(
 				elm$html$Html$div,
@@ -5646,7 +5655,6 @@ var elm$core$Task$perform = F2(
 		return elm$core$Task$command(
 			A2(elm$core$Task$map, toMessage, task));
 	});
-var elm$core$String$length = _String_length;
 var elm$core$String$slice = _String_slice;
 var elm$core$String$dropLeft = F2(
 	function (n, string) {

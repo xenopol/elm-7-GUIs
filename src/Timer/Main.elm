@@ -106,7 +106,7 @@ view { timer, range } =
                 ]
                 []
             ]
-        , div [ class "timer" ] [ text <| String.fromFloat timer ]
+        , div [ class "timer" ] [ text <| "⏱ " ++ getTimer timer ]
         , div [ class "duration" ]
             [ text "Duration:"
             , input
@@ -120,3 +120,31 @@ view { timer, range } =
             ]
         , button [ onClick Reset ] [ text "Reset" ]
         ]
+
+
+
+-- If timer is a whole number: 5, add '.0' at the end,
+-- in order to always have the same width/nr. of decimals.
+-- Otherwise, the timer will jump from '5 s' to '5.01 s'
+
+
+getTimer : Float -> String
+getTimer number =
+    let
+        timer =
+            String.fromFloat number
+
+        timerLength =
+            String.length timer
+
+        roundedTimerLength =
+            number
+                |> round
+                |> String.fromInt
+                |> String.length
+    in
+    if timerLength == roundedTimerLength then
+        timer ++ ".0 s"
+
+    else
+        timer ++ " s"
