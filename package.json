@@ -1,0 +1,24 @@
+{
+  "name": "elm-7-guis",
+  "version": "1.0.0",
+  "description": "An implementation of the 7 GUIs in Elm",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel ./src/index.html --public-url /dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xenopol/elm-7-GUIs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xenopol/elm-7-GUIs/issues"
+  },
+  "homepage": "https://github.com/xenopol/elm-7-GUIs#readme",
+  "devDependencies": {
+    "elm-hot": "^1.0.1",
+    "node-elm-compiler": "^5.0.3",
+    "parcel": "^1.12.3"
+  }
+}
