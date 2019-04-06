@@ -1,0 +1,79 @@
+html {
+  height: 100%;
+}
+
+body {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: #607D8B;
+  box-sizing: border-box;
+
+  --main-width: 300px;
+  --font-size: 30px;
+  --disabled-color: #999;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  color: white;
+  font-size: var(--font-size);
+  border: 2px solid white;
+  border-radius: 30px;
+}
+
+.drawing-area {
+  width: 70vw;
+  height: 50vh;
+  margin: 40px;
+  border: 1px solid white;
+  border-radius: 15px;
+}
+
+.resize-container {
+  min-height: 31px;
+}
+
+.resize-container input {
+  margin: 0 20px;
+}
+
+.circle {
+  position: absolute;
+  background: white;
+  border: 1px solid #607D8B;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.container button {
+  margin-right: 20px;
+  padding: 10px 20px;
+  font-size: var(--font-size);
+  color: white;
+  cursor: pointer;
+  border: 2px solid white;
+  background: transparent;
+  border-radius: 30px;
+}
+
+.container button:disabled {
+  cursor: not-allowed;
+  color: var(--disabled-color);
+  border-color: var(--disabled-color);
+}
+
+.container button:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.container button:active:not(:disabled) {
+  transform: scale(0.95);
+}
