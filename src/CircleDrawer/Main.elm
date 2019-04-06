@@ -4,6 +4,7 @@ import Browser
 import Html exposing (Attribute, Html, button, div, fieldset, input, legend, text)
 import Html.Attributes exposing (class, disabled, max, min, style, type_, value)
 import Html.Events exposing (on, onClick, onInput, stopPropagationOn)
+import Html.Keyed
 import Json.Decode
 
 
@@ -234,7 +235,7 @@ view ({ changes, inactiveChanges } as model) =
             [ button [ onClick Undo, disabled <| List.isEmpty changes ] [ text "Undo" ]
             , button [ onClick Redo, disabled <| List.isEmpty inactiveChanges ] [ text "Redo" ]
             ]
-        , div [ class "drawing-area", onClickPosition ] <| getCircles model.changes
+        , Html.Keyed.node "div" [ class "drawing-area", onClickPosition ] <| getCircles model.changes
         , case model.selectedCircle of
             Just { xPos, yPos } ->
                 div [ class "resize-container" ]
@@ -254,13 +255,14 @@ view ({ changes, inactiveChanges } as model) =
         ]
 
 
-getCircles : Changes -> List (Html Msg)
+getCircles : Changes -> List ( String, Html Msg )
 getCircles =
     List.map
         (\change ->
             case change of
                 DrawCircle { id, xPos, yPos, size } ->
-                    div
+                    ( String.fromInt id
+                    , div
                         [ class "circle"
                         , style "top" <| yPos ++ "px"
                         , style "left" <| xPos ++ "px"
@@ -269,9 +271,10 @@ getCircles =
                         , onClickStopPropagation id
                         ]
                         []
+                    )
 
-                ResizeCircle _ _ ->
-                    text ""
+                ResizeCircle id _ ->
+                    ( String.fromInt id, div [] [] )
         )
 
 
