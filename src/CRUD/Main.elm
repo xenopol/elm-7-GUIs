@@ -4,7 +4,7 @@ import Browser
 import Browser.Events
 import Dict exposing (Dict)
 import Html exposing (Html, button, div, fieldset, input, legend, text)
-import Html.Attributes exposing (attribute, class, value)
+import Html.Attributes exposing (attribute, class, classList, disabled, value)
 import Html.Events exposing (onClick, onInput)
 import Html.Keyed
 import Json.Decode
@@ -164,7 +164,9 @@ view model =
             , input [ onInput Search ] []
             ]
         , div [ class "body" ]
-            [ Html.Keyed.ul [ class "names" ] <| getNames <| filterNames model.search model.names
+            [ Html.Keyed.ul [ class "names" ] <|
+                getNames model.id <|
+                    filterNames model.search model.names
             , div [ class "actions" ]
                 [ div [ class "actions-first" ]
                     [ text "Name:"
@@ -177,22 +179,41 @@ view model =
                 ]
             ]
         , div [ class "footer" ]
-            [ button [ onClick Create ] [ text "Create" ]
-            , button [ onClick Update ] [ text "Update" ]
-            , button [ onClick Delete ] [ text "Delete" ]
+            [ button
+                [ onClick Create
+                , disabled <| isButtonDisabled model || not (String.isEmpty model.id)
+                ]
+                [ text "Create" ]
+            , button
+                [ onClick Update
+                , disabled <| String.isEmpty model.id || isButtonDisabled model
+                ]
+                [ text "Update" ]
+            , button
+                [ onClick Delete
+                , disabled <| String.isEmpty model.id || isButtonDisabled model
+                ]
+                [ text "Delete" ]
             ]
         ]
 
 
-getNames : Names -> List ( String, Html Msg )
-getNames names =
+isButtonDisabled : Model -> Bool
+isButtonDisabled { firstName, lastName } =
+    isStringValid firstName && isStringValid lastName |> not
+
+
+getNames : String -> Names -> List ( String, Html Msg )
+getNames id names =
     names
         |> Dict.toList
         |> List.map
-            (\( id, ( firstName, lastName ) ) ->
+            (\( nameId, ( firstName, lastName ) ) ->
                 ( firstName ++ lastName
                 , div
-                    [ attribute "data-id" id ]
+                    [ classList [ ( "name", True ), ( "active", nameId == id ) ]
+                    , attribute "data-id" nameId
+                    ]
                     [ text <| lastName ++ ", " ++ firstName ]
                 )
             )
