@@ -128,7 +128,7 @@ update msg ({ changes, inactiveChanges, idCounter, isResizing, selectedCircle } 
                 ((DrawCircle _) as head) :: tail ->
                     { model | changes = tail, inactiveChanges = head :: inactiveChanges }
 
-                ((ResizeCircle id size) as head) :: tail ->
+                (ResizeCircle id size) :: tail ->
                     let
                         lastSize =
                             findCircle id changes
@@ -156,7 +156,11 @@ update msg ({ changes, inactiveChanges, idCounter, isResizing, selectedCircle } 
                                 |> Maybe.withDefault defaultCircleSize
                     in
                     { model
-                        | changes = resizeCircle size (findCircle id changes) (ResizeCircle id lastSize :: changes)
+                        | changes =
+                            resizeCircle
+                                size
+                                (findCircle id changes)
+                                (ResizeCircle id lastSize :: changes)
                         , inactiveChanges = tail
                     }
 
