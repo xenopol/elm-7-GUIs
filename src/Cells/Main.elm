@@ -3,10 +3,11 @@ module Main exposing (Model, Msg(..), init, main, update)
 import Browser
 import Browser.Dom
 import Dict exposing (Dict)
-import Html exposing (Attribute, Html, fieldset, input, legend, span, table, td, text, th, tr)
+import Html exposing (Attribute, Html, fieldset, input, legend, span, td, text, th)
 import Html.Attributes exposing (class, classList, id, scope, value)
 import Html.Events exposing (on, onClick, onDoubleClick, stopPropagationOn)
 import Html.Keyed
+import Html.Lazy
 import Json.Decode
 import Task
 
@@ -124,51 +125,64 @@ subscriptions _ =
 
 
 view : Model -> Html Msg
-view model =
+view {activeCellId, cells} =
     fieldset [ class "container", onClick ClearActiveCell ]
-        -- todo onClick should be on body
-        [ legend [] [ text "Cells" ] -- todo add Html.Keyed
-        , table [] <|
-            getTableRows rowsData columnsData model
+        [ legend [] [ text "Cells" ]
+        , viewTable activeCellId cells
         ]
 
 
-getTableRows : List String -> List String -> Model -> List (Html Msg)
-getTableRows rows columns model =
-    List.indexedMap
-        (\i row ->
-            tr [] <|
-                List.indexedMap
-                    (\j column ->
-                        if i == 0 && j == 0 then
-                            td [] []
-
-                        else if i == 0 then
-                            th [ scope "col" ] [ text column ]
-
-                        else if j == 0 then
-                            th [ scope "row" ] [ text row ]
-
-                        else
-                            getTableData row column model
-                    )
-                    columns
-        )
-        rows
+viewTable : Maybe String -> Cells -> Html Msg
+viewTable activeCellId cells =
+    Html.Keyed.node "table" [] <|
+        List.indexedMap
+            (\i row ->
+                ( String.fromInt i
+                , Html.Lazy.lazy4 viewTableRow i row activeCellId cells
+                )
+            )
+            rowsData
 
 
-getTableData : String -> String -> Model -> Html Msg
-getTableData row column { cells, activeCellId } =
-    let
-        cellId =
-            column ++ "-" ++ row
+viewTableRow : Int -> String -> Maybe String -> Cells -> Html Msg
+viewTableRow i row activeCellId cells =
+    Html.Keyed.node "tr" [] <|
+        List.indexedMap
+            (\j column ->
+                ( String.fromInt j
+                , Html.Lazy.lazy6 viewTableData activeCellId cells row i j column
+                )
+            )
+            columnsData
 
-        isCellActive =
-            Maybe.withDefault "" activeCellId == cellId
 
-        cellValue =
-            getCellValueOrDefault cellId cells
-    in
+viewTableData : Maybe String -> Cells -> String -> Int -> Int -> String -> Html Msg
+viewTableData activeCellId cells row i j column =
+    if i == 0 && j == 0 then
+        td [] []
+
+    else if i == 0 then
+        th [ scope "col" ] [ text column ]
+
+    else if j == 0 then
+        th [ scope "row" ] [ text row ]
+
+    else
+        let
+            cellId =
+                column ++ "-" ++ row
+
+            isCellActive =
+                Maybe.withDefault "" activeCellId == cellId
+
+            cellValue =
+                getCellValueOrDefault cellId cells
+        in
+        Html.Lazy.lazy3 getTableData isCellActive cellId cellValue
+
+
+getTableData : Bool -> String -> String -> Html Msg
+getTableData isCellActive cellId cellValue =
     td
         [ classList [ ( "active", isCellActive ) ]
         , onDoubleClick <| SelectCell cellId
